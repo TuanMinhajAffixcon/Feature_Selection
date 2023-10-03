@@ -19,7 +19,7 @@ beautifulsoup4==4.12.2
 bleach==6.0.0
 blinker==1.6.2
 blis==0.7.10
-boto3==1.28.52
+
 
 cachetools==5.3.1
 catalogue==2.0.9
