@@ -10,11 +10,11 @@ import community as community_louvain
 # from community import best_partition
 import re
 from adjustText import adjust_text
-from PIL import Image
-import plotly.express as px
+# from PIL import Image
+# import plotly.express as px
 import warnings
 warnings.filterwarnings('ignore')
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 
 st.set_page_config(page_title='AFFIX PRODUCT EXPLORER',page_icon=':bar_chart:',layout='wide')
 
