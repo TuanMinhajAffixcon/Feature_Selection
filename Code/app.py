@@ -7,7 +7,7 @@ import spacy
 from spacy import displacy
 import networkx as nx
 import community as community_louvain
-# from community.community_louvain import best_partition
+
 import re
 # from adjustText import adjust_text
 # from PIL import Image
