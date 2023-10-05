@@ -593,24 +593,31 @@ def main():
             edges_df = edges_df.sort_values(by='Value', ascending=False)
 
             G = nx.from_pandas_edgelist(edges_df, source='Source', target='Target', edge_attr='Value', create_using=nx.Graph())
-            net = Network(notebook=True, width='1000px', height='700px', bgcolor='#22222E', font_color='white')
+            # net = Network(notebook=True, width='1000px', height='700px', bgcolor='#22222E', font_color='white')
+            plt.figure(figsize=(8,8))
+            pos=nx.kamada_kawai_layout(G)
+            nx.draw(G,with_labels=True,node_color='skyblue',edge_cmap=plt.cm.Blues,pos=pos,font_color='red')
+
             node_degree = dict(G.degree)
             communities = community_louvain.best_partition(G)
             nx.set_node_attributes(G, node_degree, 'size')
             nx.set_node_attributes(G, communities, 'group')
+            # st.write(communities)
+            # plt.tight_layout()  
+            # st.pyplot(plt)
 
-            net.from_nx(G)
-            # net.repulsion(node_distance=9000, spring_length=20000)
-            net.set_options("""
-                var options = {
-                "physics": {
-                    "enabled": false
-                }
-                }
-            """)
-            with col1:
-                net.show('com_net_network_graph.html')
-                st.components.v1.html(open("com_net_network_graph.html").read(), height=700, width=1000)
+            # net.from_nx(G)
+            # # net.repulsion(node_distance=9000, spring_length=20000)
+            # net.set_options("""
+            #     var options = {
+            #     "physics": {
+            #         "enabled": false
+            #     }
+            #     }
+            # """)
+            # with col1:
+            #     net.show('com_net_network_graph.html')
+            #     st.components.v1.html(open("com_net_network_graph.html").read(), height=700, width=1000)
                 
             communities_df = pd.DataFrame.from_dict(communities, orient='index', columns=['Community'])
             communities_df.reset_index(inplace=True)
@@ -672,7 +679,7 @@ def main():
                 plt.tight_layout()  
                 st.pyplot(plt)
 
-            return plt,communities_df
+            return communities_df,edges_df
         # network_graph_method(df_filtered,selected_columns)
         if approach == 'Plot chart only':
             # required_list = [value for values in result_dict.values() for value in values]
@@ -680,19 +687,24 @@ def main():
 
         elif approach == 'Relationship Graph only':
             net=network_graph_method(df_filtered,selected_columns)
-            non2,communities_df=net
+            communities_df,edges_df=net
             with col2:
                 st.write(communities_df)
                 seg_selection=st.multiselect('Chooose Segments: ',communities_df.Segments.tolist())
+                st.write(seg_selection)
                 seg_selection_df=filter_condition(df_filtered,seg_selection)
-            st.write('final filtered data count: ',len(seg_selection_df))
+                st.write('final filtered data count: ',len(seg_selection_df))
             with st.expander("View Data"):
                 st.write(seg_selection_df)
+            # st.write('final filtered data count: ',len(seg_selection_df))
             csv=seg_selection_df.to_csv(index=False).encode('utf-8')
             st.download_button("Download Data",data=csv,file_name="Result.csv")
 
-            # with col1:
-            #     non2
+            with col1:
+                with st.expander("View pair wise combination data"):
+                    st.write(edges_df)
+                csv=seg_selection_df.to_csv(index=False).encode('utf-8')
+                st.download_button("Download pair wise Data",data=csv,file_name="Result.csv")
 
         elif approach == 'Plot chart first and Relationship Graph after':
             plot_chart=Plot_chart_method(df_filtered,selected_segments,result_dict)
@@ -713,7 +725,7 @@ def main():
 
         elif approach == 'Relationship Graph first and Plot Chart after':
             net=network_graph_method(df_filtered,selected_columns)
-            non2,communities_df=net
+            communities_df,edges_df=net
             with col2:
                 st.write(communities_df)
                 community_selection_option=st.selectbox('Select option: ',('Community wise analyze','custom analyze'))
