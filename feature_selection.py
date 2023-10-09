@@ -17,6 +17,16 @@ warnings.filterwarnings('ignore')
 # from bs4 import BeautifulSoup
 import io
 st.set_page_config(page_title='AFFIX PRODUCT EXPLORER',page_icon=':bar_chart:',layout='wide')
+custom_css = """
+<style>
+body {
+    background-color: #22222E; 
+}
+</style>
+"""
+
+# Add the custom CSS to the Streamlit app
+st.write(custom_css, unsafe_allow_html=True)
 
 def twin_bar_chart(bar_df,index_df):
     fig, ax1 = plt.subplots(figsize=(12, 5))
