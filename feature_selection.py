@@ -82,7 +82,7 @@ def main():
 
             segment_industry_dict = df_seg.groupby('industry')['segment_name'].apply(list).to_dict()
             item_list = segment_industry_dict[selected_industry]
-            select_all_segments = st.checkbox("Select All Segments")
+            select_all_segments = st.checkbox("Select All Segments",value=True)
             if select_all_segments:
                 selected_segments = item_list
             else:
@@ -461,7 +461,7 @@ def main():
                 st.write(top_segments)
 
         with col3:
-            select_all_segments = st.checkbox("Select All Segments to show the Plot")
+            select_all_segments = st.checkbox("Select All Segments to show the Plot",value=True)
         
         def scatter_plot(df):
             fig, ax = plt.subplots(figsize=(12, 5))  
