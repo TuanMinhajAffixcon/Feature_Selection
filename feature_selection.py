@@ -55,6 +55,7 @@ def twin_bar_chart(bar_df,index_df):
 
 def main():
     st.title(" :bar_chart: AFFIX PRODUCT EXPLORER")
+    st.sidebar.image('AFFIXCON-LOGO.png')
     st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
     option = st.sidebar.selectbox("Select inputs", ('industry', 'segments', 'code'))
     df_seg=pd.read_csv('affixcon_segments.csv',encoding='latin-1',usecols=["industry","code","category","segment_name"])
@@ -296,6 +297,7 @@ def main():
                 st.write("Demographics matched data count is: ",len(df_filtered))
         # st.write(df_filtered)
 #-----------------------------------------------------------------------------------------------------------------------------------
+
         @st.cache_data 
         def Plot_chart_method(df_filtered,selected_segments,result_dict):
             selected_columns = ['interests', 'brands_visited', 'place_categories', 'geobehaviour']
@@ -340,7 +342,10 @@ def main():
             for new_col, original_cols in result_dict.items():
                 merged_op[new_col + '_avg'] = merged_op[original_cols].mean(axis=1)
                 merged_op[new_col + '_std'] = merged_op[original_cols].std(axis=1,ddof=0)
-
+            result_dict = {key: result_dict[key] for key in new_order if key in result_dict}
+            for key, value in result_dict.items():
+                if key not in new_order:
+                    result_dict[key] = value
             new_row_values = []
             for _, row in merged_op.iterrows():
                 new_row = []
@@ -354,10 +359,10 @@ def main():
             merged_op.index = merged_op.index.map({0: 'prevalence', 1: 'overlap'})
 
             df_quadrant = merged_op.transpose()
-            df_quadrant['quadrant'] = 'None'
-            df_quadrant.loc[(df_quadrant['prevalence'] > 0) & (df_quadrant['overlap'] >= 0), 'quadrant'] = 'Top_right'
-            df_quadrant.loc[(df_quadrant['prevalence'] <= 0) & (df_quadrant['overlap'] >= 0), 'quadrant'] = 'Top_left'
-            df_quadrant.loc[(df_quadrant['prevalence'] <= 0) & (df_quadrant['overlap'] < 0), 'quadrant'] = 'Bottom_left'
+            df_quadrant['quadrant'] = 'No Quadrant'
+            df_quadrant.loc[(df_quadrant['prevalence'] > 0) & (df_quadrant['overlap'] > 0), 'quadrant'] = 'Top_right'
+            df_quadrant.loc[(df_quadrant['prevalence'] < 0) & (df_quadrant['overlap'] > 0), 'quadrant'] = 'Top_left'
+            df_quadrant.loc[(df_quadrant['prevalence'] < 0) & (df_quadrant['overlap'] < 0), 'quadrant'] = 'Bottom_left'
             df_quadrant.loc[(df_quadrant['prevalence'] > 0) & (df_quadrant['overlap'] < 0), 'quadrant'] = 'Bottom_right'
 
             #-----------------------------------------------------------------------------------------------------------------------------
