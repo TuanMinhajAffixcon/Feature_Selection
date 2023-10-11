@@ -244,6 +244,7 @@ def main():
             return df
         
         demographics_df=demographics(demographics_df)
+        demographics_df2=demographics_df.copy()
         # st.write(demographics_df)
         custom_order = [
             "Very Low (Under $20,799)","Low ($20,800 - $41,599)","Below Average ($41,600 - $64,999)","Average ($65,000 - $77,999)",
@@ -261,10 +262,10 @@ def main():
                 return len(custom_order)
 
         # Apply the custom sort key function to the "Column_Name" column
-        demographics_df['Custom_Sort_Key'] = demographics_df['Column_Name'].map(custom_sort_key)
-        demographics_df = demographics_df.sort_values('Custom_Sort_Key')
-        demographics_df = demographics_df.reset_index(drop=True)
-        demographics_df = demographics_df.drop(columns=['Custom_Sort_Key'])
+        demographics_df2['Custom_Sort_Key'] = demographics_df2['Column_Name'].map(custom_sort_key)
+        demographics_df2 = demographics_df2.sort_values('Custom_Sort_Key')
+        demographics_df2 = demographics_df2.reset_index(drop=True)
+        demographics_df2 = demographics_df2.drop(columns=['Custom_Sort_Key'])
 
         demographics_df1=demographics_df.copy()
 
@@ -317,7 +318,7 @@ def main():
             return plt
         with col3:
             with st.expander("View All Demographics"):
-                bar_plot = bar_chart(demographics_df,"Column_Name","Percentage","Demographics","Percentage (%)","Percentage of Each Demographics")
+                bar_plot = bar_chart(demographics_df2,"Column_Name","Percentage","Demographics","Percentage (%)","Percentage of Each Demographics")
                 st.pyplot(bar_plot)
                 buffer = io.BytesIO()
                 plt.savefig(buffer, format='png')
