@@ -7,7 +7,7 @@ import spacy
 from spacy import displacy
 import networkx as nx
 import community as community_louvain
-
+import sys
 import re
 # from adjustText import adjust_text
 # from PIL import Image
@@ -208,6 +208,13 @@ def main():
         columns_for_custom_columns = list(filter(lambda value: value in selected_segments, df_backup.columns))
         df_backup=df_backup[columns_for_custom_columns]
 
+        try:
+            if df_backup.empty:
+                raise ValueError("Not enough data to be processed")
+            
+        except ValueError as ve:
+            st.error(str(ve))
+            sys.exit(1)  
 
         with col3:
             st.write("Your Matched data count is: ",len(df))
@@ -342,7 +349,23 @@ def main():
 
             with col3:
                 st.write("Demographics matched data count is: ",len(df_filtered))
-        # st.write(df_filtered)
+                df_filtered_copy=df_filtered.copy()
+                df_filtered_copy=df_filtered_copy[selected_columns]
+                for item in selected_segments:
+                    df_filtered_copy[item] = df_filtered_copy.apply(lambda row: 1 if any(
+                        str(item) in val.split(',') if isinstance(val, str) else False for val in row) else 0, axis=1)
+                df_filtered_copy.drop(selected_columns,axis=1,inplace=True)
+                zero_columns = len(df_filtered_copy.columns[(df_filtered_copy == 0).all()])
+                columns_to_be_count=len(df_filtered_copy.columns)-zero_columns
+
+                try:
+                    if columns_to_be_count <= 1:
+                        raise ValueError("Not enough data to be processed")
+                    
+                except ValueError as ve:
+                    st.error(str(ve))
+                    sys.exit(1)  
+                
 #-----------------------------------------------------------------------------------------------------------------------------------
 
         # @st.cache_data 
@@ -1018,16 +1041,42 @@ def main():
         with col2:
             if oppotunity_options=='More popular & More Competition':
                 with st.expander("View More Oppotunity- More overlap Area(From all category)"):
-                    oppottunities('More popular & More Competition')
+                    try:
+                        if match['More popular & More Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:
+                            oppottunities('More popular & More Competition')
+                    except ValueError as ve:
+                        st.error(str(ve))
+
+
             elif oppotunity_options=='More popular & Less Competition':
                 with st.expander("View More Oppotunity- Less overlap Area(From all category)"):
-                    oppottunities("More popular & Less Competition")
+                    try:
+                        if match['More popular & Less Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:
+                            oppottunities("More popular & Less Competition")
+                    except ValueError as ve:
+                        st.error(str(ve))
             elif oppotunity_options=='Less popular & More Competition':
                 with st.expander("View Less Oppotunity- More overlap Area(From all category)"):
-                    oppottunities("Less popular & More Competition")
+                    try:
+                        if match['Less popular & More Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:
+                            oppottunities("Less popular & More Competition")
+                    except ValueError as ve:
+                        st.error(str(ve))
             else:
                 with st.expander("View Less Oppotunity- Less overlap Area(From all category)"):
-                    oppottunities("Less popular & Less Competition")
+                    try:
+                        if match['Less popular & Less Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:                    
+                            oppottunities("Less popular & Less Competition")
+                    except ValueError as ve:
+                        st.error(str(ve))
 
 
         prevalence,Top_left,Top_right,Bottom_left,Bottom_right,merged_op=Plot_chart_method(df_filtered,selected_segments,result_dict,False)
@@ -1093,16 +1142,40 @@ def main():
         with col1:
             if oppotunity_options=='More popular & More Competition':
                 with st.expander("View More Oppotunity- More overlap Area1 (From within each categories)"):
-                    oppottunities1('More popular & More Competition')
+                    try:
+                        if match['More popular & More Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:
+                            oppottunities1('More popular & More Competition')
+                    except ValueError as ve:
+                        st.error(str(ve))
             elif oppotunity_options=='More popular & Less Competition':
                 with st.expander("View More Oppotunity- Less overlap Area1 (From within each categories)"):
-                    oppottunities1("More popular & Less Competition")
+                    try:
+                        if match['More popular & Less Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:
+                            oppottunities1("More popular & Less Competition")
+                    except ValueError as ve:
+                        st.error(str(ve))
             elif oppotunity_options=='Less popular & More Competition':
                 with st.expander("View Less Oppotunity- More overlap Area1 (From within each categories)"):
-                    oppottunities1("Less popular & More Competition")
+                    try:
+                        if match['Less popular & More Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:
+                            oppottunities1("Less popular & More Competition")
+                    except ValueError as ve:
+                        st.error(str(ve))                    
             else:
                 with st.expander("View Less Oppotunity- Less overlap Area1 (From within each categories)"):
-                    oppottunities1("Less popular & Less Competition")
+                    try:
+                        if match['Less popular & Less Competition'].empty:
+                            raise ValueError("No data found for Quadrant, Try another Quadrant")
+                        else:                    
+                            oppottunities1("Less popular & Less Competition")
+                    except ValueError as ve:
+                        st.error(str(ve))
             
 
         @st.cache_data 
